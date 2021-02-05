@@ -1,0 +1,3 @@
+Log: Hello
+Log: Welcome
+Log: Ciao
