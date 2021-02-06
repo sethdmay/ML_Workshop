@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 import time
+import os
 
 import ta
 import ccxt
@@ -12,7 +13,7 @@ from tensorflow.keras.optimizers import Adam
 from sklearn.preprocessing import RobustScaler
 
 import matplotlib.pyplot as plt
-plt.style.use('bmh')
+plt.style.use('bmh') # https://matplotlib.org/gallery/style_sheets/style_sheets_reference.html
 
 # As a general note, some parts of the code are not used anywhere, but I included them as they may be useful for
 # extensions, e.g. making a live trader.
@@ -111,6 +112,7 @@ class Trainer:
     def one_hot_encode(self, x):
         y = np.zeros((x.size, x.max() + 1))
         y[np.arange(x.size), x] = 1
+
 
         return y
 
@@ -211,6 +213,8 @@ class Backtester:
             y = self.trainer.model.predict(data_tensor)
             best_action = np.argmax(y)
 
+            # [0.2 0.9 0.6]
+
             if best_action == 1: # buy, then sell
                 price_buy = self.data['open'].iloc[ii]
                 price_sell = self.data['close'].iloc[ii]
@@ -251,8 +255,13 @@ if __name__ == '__main__':
     init_BTC = 1.0
     init_USD = 30000.0
 
+    # key = os.environ["apiKey"]
+    # secret = os.environ["apiSecret"]
+    # passphrase = os.environ["passphrase"]
+
     # Get data
-    exch_client = ExchangeInterface(exchange, market)
+    exch_client = ExchangeInterface(exchange,
+                                    market)
     start = 1546344000000 # Jan 1, 2019
     # start = 1514808000000 # Jan 1, 2018
     resp = exch_client.get_candles('1d', since=start)
